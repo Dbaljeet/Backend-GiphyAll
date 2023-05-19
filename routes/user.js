@@ -1,14 +1,34 @@
 const express = require('express')
 const router = express.Router()
-const { registerUser, getUser, deleteUser } = require('../controllers/user')
+const {
+  registerUser,
+  loginUser,
+  getUser,
+  deleteUser,
+} = require('../controllers/user')
+
 const {
   validatorRegisterUser,
   validatorDeleteUser,
+  validatorloginUser,
 } = require('../validators/user')
-const { getCookie } = require('../middleware/getCookie')
 
-router.post('/register', validatorRegisterUser, getCookie, registerUser)
-router.post('/get', getUser)
-router.post('/deleteAccount', validatorDeleteUser, deleteUser)
+const { getCookie } = require('../middleware/getCookie')
+const { checkSession } = require('../middleware/checkSession')
+const { checkRol } = require('../middleware/checkRol')
+
+router.post('/register', validatorRegisterUser, registerUser)
+
+router.post('/login', validatorloginUser, getCookie, loginUser)
+
+router.post('/get', checkSession, getUser)
+
+router.post(
+  '/deleteAccount',
+  validatorDeleteUser,
+  checkSession,
+  checkRol(['admin']),
+  deleteUser
+)
 
 module.exports = router
