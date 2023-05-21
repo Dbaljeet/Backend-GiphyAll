@@ -7,7 +7,9 @@ const dbConnect = require('./config/mongo')
 
 const app = express()
 
-app.use(cors())
+const whitelist = [process.env.PAGE]
+
+app.use(cors({ origin: whitelist }))
 
 app.use(express.json())
 

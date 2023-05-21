@@ -26,6 +26,7 @@ const validatorDeleteUser = [
     return ValidateResults(req, res, next)
   },
 ]
+
 //ismongoid
 module.exports = {
   validatorRegisterUser,

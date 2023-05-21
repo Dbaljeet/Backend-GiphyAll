@@ -1,3 +1,7 @@
+const { usersModel } = require('../models')
+const { handleError } = require('../utils/handleError')
+const { getUserAuth } = require('../utils/getUserAuth')
+
 /**
  * get favorites gifs of 1 user
  * @param {*} req
@@ -17,6 +21,19 @@ const getGifs = async (req, res) => {
   }
 }
 
+const refreshGifs = async (req, res) => {
+  try {
+    const body = req.body
+    const { gifs } = body
+    const user = await getUserAuth(req, res)
+    const data = await usersModel.updateOne({ _id: user._id }, { gifs })
+    console.log(data)
+    res.send({ data })
+  } catch (err) {
+    handleError(res, err, 400)
+  }
+}
+
 const addGifs = () => {}
 
-module.exports = { getGifs, addGifs }
+module.exports = { getGifs, addGifs, refreshGifs }

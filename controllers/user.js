@@ -3,7 +3,9 @@ const { usersModel } = require('../models')
 const { handleError } = require('../utils/handleError')
 const { compare, encrypt } = require('../utils/handlePassword')
 
-const { tokenSign, verifyToken } = require('../utils/handleJwt')
+const { tokenSign } = require('../utils/handleJwt')
+
+const { getUserAuth } = require('../utils/getUserAuth')
 
 const registerUser = async (req, res) => {
   try {
@@ -13,11 +15,11 @@ const registerUser = async (req, res) => {
     const data = await usersModel.create(body)
     const { name, email, role, gifs, _id } = data
 
-    const jwt = await tokenSign(_id, role)
+    const token = await tokenSign(_id, role)
 
-    res.send({ message: 'ok', name, email, role, gifs, jwt })
+    res.send({ message: 'ok', name, email, role, gifs, token })
   } catch (err) {
-    handleError(res, err, 400)
+    handleError(res, err, 406)
   }
 }
 
@@ -26,7 +28,10 @@ const loginUser = async (req, res) => {
     const body = matchedData(req)
     const { email, password } = body
 
-    const data = await usersModel.findOne({ email }).select('password')
+    const data = await usersModel
+      .findOne({ email })
+      .select('password')
+      .select('gifs')
 
     if (!data) handleError(res, 'Error, user not exist', 400)
 
@@ -42,12 +47,12 @@ const loginUser = async (req, res) => {
   }
 }
 
-const getUser = async (req, res) => {
+const getUser = async (req, res, n) => {
   try {
-    const { body } = req
-    const user = body.id
-    const data = await usersModel.findById({ _id: user })
-    res.send({ data })
+    const data = await getUserAuth(req, res)
+    /*const { body } = req
+    const { name, email, gifs } = body*/
+    res.send(data)
   } catch (err) {
     handleError(res, err, 400)
   }

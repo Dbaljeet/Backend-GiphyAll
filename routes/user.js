@@ -13,13 +13,12 @@ const {
   validatorloginUser,
 } = require('../validators/user')
 
-const { getCookie } = require('../middleware/getCookie')
 const { checkSession } = require('../middleware/checkSession')
 const { checkRol } = require('../middleware/checkRol')
 
 router.post('/register', validatorRegisterUser, registerUser)
 
-router.post('/login', validatorloginUser, getCookie, loginUser)
+router.post('/login', validatorloginUser, loginUser)
 
 router.post('/get', checkSession, getUser)
 
