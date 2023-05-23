@@ -41,6 +41,7 @@ const loginUser = async (req, res) => {
     if (!auth) handleError(res, 'Error, unauthorized', 401)
 
     const token = await tokenSign(data)
+    if (!token) handleError(res, 'Error, token', 401)
     res.send({ message: 'Login successful', data, token })
   } catch (err) {
     handleError(res, err, 400)
@@ -50,6 +51,7 @@ const loginUser = async (req, res) => {
 const getUser = async (req, res, n) => {
   try {
     const data = await getUserAuth(req, res)
+    if (!data) handleError(res, 'Error, user not exist', 400)
     /*const { body } = req
     const { name, email, gifs } = body*/
     res.send(data)
