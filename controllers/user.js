@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
     const password = await encrypt(bodyReq.password)
     const body = { ...bodyReq, password }
     const data = await usersModel.create(body)
-    const { name, email, role, gifs, _id } = data
+    const { name, email, role, gifs = [], _id } = data
 
     const token = await tokenSign(_id, role)
 
@@ -33,15 +33,24 @@ const loginUser = async (req, res) => {
       .select('password')
       .select('gifs')
 
-    if (!data) handleError(res, 'Error, user not exist', 400)
+    if (!data) {
+      handleError(res, 'Error, user not exist', 400)
+      return
+    }
 
     const auth = await compare(password, data.password)
     data.set('password', undefined, { strict: false })
 
-    if (!auth) handleError(res, 'Error, unauthorized', 401)
+    if (!auth) {
+      handleError(res, 'Error, unauthorized', 401)
+      return
+    }
 
     const token = await tokenSign(data)
-    if (!token) handleError(res, 'Error, token', 401)
+    if (!token) {
+      handleError(res, 'Error, token', 401)
+      return
+    }
     res.send({ message: 'Login successful', data, token })
   } catch (err) {
     handleError(res, err, 400)
@@ -51,7 +60,10 @@ const loginUser = async (req, res) => {
 const getUser = async (req, res, n) => {
   try {
     const data = await getUserAuth(req, res)
-    if (!data) handleError(res, 'Error, user not exist', 400)
+    if (!data) {
+      handleError(res, 'Error, user not exist', 400)
+      return
+    }
     /*const { body } = req
     const { name, email, gifs } = body*/
     res.send(data)

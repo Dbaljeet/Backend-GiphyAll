@@ -8,12 +8,18 @@ const checkRol = (rol) => async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ').pop()
 
-    if (!token) handleError(res, 'error: please retry login', 401)
+    if (!token) {
+      handleError(res, 'error: please retry login', 401)
+      return
+    }
 
     let user_id = ''
 
     await jwt.verify(token, JWT_SECRET, (err, decoded) => {
-      if (err | !decoded._id) handleError(res, 'error: retry login', 401)
+      if (err | !decoded._id) {
+        handleError(res, 'error: retry login', 401)
+        return
+      }
       user_id = decoded._id
     })
 
@@ -23,7 +29,10 @@ const checkRol = (rol) => async (req, res, next) => {
 
     const check = rol.some((aux) => rolesByUser.includes(aux))
 
-    if (!check) handleError(res, 'Error unauthorized', 401)
+    if (!check) {
+      handleError(res, 'Error unauthorized', 401)
+      return
+    }
 
     next()
   } catch (err) {
