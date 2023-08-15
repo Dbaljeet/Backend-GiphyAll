@@ -10,7 +10,7 @@
 * bcryptjs
 * mongoose
 
-Test with Jest and Supertest
+Test with Jest and SuperTest
 
 ---
 
